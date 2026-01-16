@@ -1,20 +1,37 @@
 "use client";
 
 import { useState } from "react";
-import { FcGoogle } from "react-icons/fc";
 import { MdOutlineClose } from "react-icons/md";
 
 export default function WaitlistButton() {
   const [isOpen, setIsOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState("");
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
 
-  const handleGoogleLogin = () => {
-    setLoading(true);
-    // Simulate auth flow or redirect
-    setTimeout(() => {
-      setLoading(false);
-      alert("Google Auth would trigger here!");
-    }, 1000);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) return;
+
+    setStatus("loading");
+    try {
+      const response = await fetch("/api/waitlist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+
+      if (!response.ok) throw new Error("Failed to join");
+
+      setStatus("success");
+      setEmail("");
+      setTimeout(() => {
+        setIsOpen(false);
+        setStatus("idle");
+      }, 2000);
+    } catch (error) {
+      console.error(error);
+      setStatus("error");
+    }
   };
 
   return (
@@ -33,7 +50,7 @@ export default function WaitlistButton() {
             onClick={() => setIsOpen(false)}
           />
 
-          <div className="relative bg-black w-full h-72 max-w-sm rounded-xl px-6 py-12 flex flex-col justify-between border border-zinc-800">
+          <div className="relative bg-black w-full h-80 max-w-sm rounded-xl px-6 py-12 flex flex-col justify-between border border-zinc-800">
             <div className="space-y-2">
               <h2 className="text-xl font-bold font-instrument tracking-tight text-white text-center">
                 Join the waitlist
@@ -43,13 +60,32 @@ export default function WaitlistButton() {
               </p>
             </div>
 
-            <button
-              onClick={handleGoogleLogin}
-              className="w-full flex items-center justify-center gap-3 bg-white rounded-full px-4 py-3 text-black tracking-tight transition-all cursor-pointer hover:bg-zinc-200"
-            >
-              <FcGoogle size={20} />
-              <span>Sign up with Google</span>
-            </button>
+            {status === "success" ? (
+              <div className="text-center text-green-400 font-medium animate-in fade-in zoom-in">
+                You're on the list!
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+                <input
+                  type="email"
+                  placeholder="name@example.com"
+                  className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-4 py-3 text-white placeholder:text-zinc-600 focus:outline-none focus:border-zinc-700 transition-colors"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={status === "loading"}
+                />
+                <button
+                  type="submit"
+                  disabled={status === "loading"}
+                  className="w-full bg-white rounded-lg px-4 py-3 text-black font-medium tracking-tight transition-all cursor-pointer hover:bg-zinc-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {status === "loading" ? "Joining..." : "Join Waitlist"}
+                </button>
+                {status === "error" && (
+                  <p className="text-xs text-red-400 text-center">Something went wrong. Try again.</p>
+                )}
+              </form>
+            )}
             
             <button 
               onClick={() => setIsOpen(false)}
