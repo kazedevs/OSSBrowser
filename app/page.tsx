@@ -23,8 +23,8 @@ export default function Home() {
          <span className="text-white font-mono text-xs uppercase tracking-widest">[ v0.1.0 ]</span>
       </div>
 
-      <div className="absolute bottom-6 left-6 mix-blend-difference z-20">
-        <span className="text-white font-instrument text-xl italic">Browser for Open Source Projects</span>
+      <div className="absolute bottom-20 md:bottom-6 left-6 right-6 md:right-auto mix-blend-difference z-20 max-w-[60%] md:max-w-none">
+        <span className="text-white font-instrument text-base md:text-xl italic">Browser for Open Source Projects</span>
       </div>
 
       <div className="absolute bottom-6 right-6 z-20">  

@@ -7,12 +7,25 @@ export default function WaitlistButton() {
   const [isOpen, setIsOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [errorMessage, setErrorMessage] = useState("");
+
+  // Email validation regex
+  const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
 
+    // Client-side validation
+    if (!EMAIL_REGEX.test(email)) {
+      setStatus("error");
+      setErrorMessage("Please enter a valid email address");
+      return;
+    }
+
     setStatus("loading");
+    setErrorMessage("");
+    
     try {
       const response = await fetch("/api/waitlist", {
         method: "POST",
@@ -20,17 +33,29 @@ export default function WaitlistButton() {
         body: JSON.stringify({ email }),
       });
 
-      if (!response.ok) throw new Error("Failed to join");
+      const data = await response.json();
+
+      if (!response.ok) {
+        // Handle specific error cases
+        if (response.status === 409) {
+          setErrorMessage("This email is already on the waitlist");
+        } else if (data.error) {
+          setErrorMessage(data.error);
+        } else {
+          setErrorMessage("Something went wrong. Try again.");
+        }
+        setStatus("error");
+        return;
+      }
 
       setStatus("success");
       setEmail("");
-      setTimeout(() => {
-        setIsOpen(false);
-        setStatus("idle");
-      }, 2000);
+      setIsOpen(false);
+      setErrorMessage("");
     } catch (error) {
       console.error(error);
       setStatus("error");
+      setErrorMessage("Something went wrong. Try again.");
     }
   };
 
@@ -82,7 +107,7 @@ export default function WaitlistButton() {
                   {status === "loading" ? "Joining..." : "Join Waitlist"}
                 </button>
                 {status === "error" && (
-                  <p className="text-xs text-red-400 text-center">Something went wrong. Try again.</p>
+                  <p className="text-xs text-red-400 text-center">{errorMessage}</p>
                 )}
               </form>
             )}
