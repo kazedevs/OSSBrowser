@@ -50,8 +50,13 @@ export default function WaitlistButton() {
 
       setStatus("success");
       setEmail("");
-      setIsOpen(false);
-      setErrorMessage("");
+      
+      // Show success message for 2 seconds before closing
+      setTimeout(() => {
+        setIsOpen(false);
+        setStatus("idle");
+        setErrorMessage("");
+      }, 2000);
     } catch (error) {
       console.error(error);
       setStatus("error");
@@ -86,8 +91,12 @@ export default function WaitlistButton() {
             </div>
 
             {status === "success" ? (
-              <div className="text-center text-green-400 font-medium animate-in fade-in zoom-in">
-                You're on the list!
+              <div className="text-center space-y-3 animate-in fade-in zoom-in duration-300">
+                <div className="text-5xl">🎉</div>
+                <div>
+                  <h3 className="text-2xl font-bold text-white">Congrats!</h3>
+                  <p className="text-green-400 font-medium mt-1">You're on the waitlist</p>
+                </div>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="flex flex-col gap-3">
