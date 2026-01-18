@@ -1,16 +1,12 @@
-
 import {NextRequest, NextResponse} from "next/server";
-import { pool } from "@/lib/db";
+import { getPool } from "@/lib/db";
 import { fetchGitHubProject } from "@/lib/github";
+import { slugify } from "@/lib/slug";
 
-function slugify(owner: string, repo: string){
-    return `${owner}-${repo}`
-    .toLowerCase().replace(/[^a-z0-9]/g, "-")
-    .replace(/^\-+|\-+$/g, "");
-}
 
 export async function POST(req: NextRequest) {
     try {
+        const pool = getPool();
         const body = await req.json();
         const { repoUrl } = body;
 
@@ -22,33 +18,32 @@ export async function POST(req: NextRequest) {
         } 
 
         //fetch github data
-
         const project = await fetchGitHubProject(repoUrl);
         const slug = slugify(project.owner, project.repo);
 
         const result = await pool.query(
             `INSERT INTO projects (
                 slug, repo_url, repo_name, owner, description, 
-                stars, forks, open_issues, primary_language, 
-                last_commit_at, readme_html, status, 
-                created_at, updated_at
+                stars, forks, open_issues, owner_avatar_url, primary_language, 
+                last_commit_at, readme_html, website, last_synced_at
             )
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, NOW(), NOW())
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, NOW())
             ON CONFLICT (slug) DO NOTHING
             RETURNING id`,
             [
-                slug,                   
-                project.repoUrl,        
-                project.repo,           // (repo_name)
-                project.owner,          
-                project.description,    
-                project.stars,          
-                project.forks,          
-                project.openIssues,     
+                slug,                       
+                project.repoUrl,            
+                project.repo,               // (repo_name)
+                project.owner,              
+                project.description,        
+                project.stars,              
+                project.forks,              
+                project.openIssues,         
+                project.owner_avatar_url,   
                 project.primaryLanguage,
-                project.lastCommitAt,   
-                project.readmeHtml,     
-                project.status,         
+                project.lastCommitAt,
+                project.readmeHtml,
+                project.website,
             ]
         );
 

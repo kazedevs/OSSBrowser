@@ -5,6 +5,8 @@ const GITHUB_API_URL = "https://api.github.com";
 type GitHubProject = {
     owner: string,
     repo: string,
+    slug: string,
+    owner_avatar_url: string,
     repoUrl: string,
     description: string,
     primaryLanguage: string,
@@ -14,8 +16,7 @@ type GitHubProject = {
     openIssues: number,
     lastCommitAt: string,
     readmeHtml: string,
-    license: string,
-    githubUrl: string,
+    website: string | null,
 }
 
 function getHeaders(){
@@ -51,13 +52,17 @@ async function fetchRepo(owner: string, repo: string){
 
 async function fetchReadme(owner: string, repo: string) {
     const res = await fetch(`${GITHUB_API_URL}/repos/${owner}/${repo}/readme`, {
-        headers: getHeaders(),
+        headers: {
+            Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
+            Accept: "application/vnd.github.html",
+        }
     });
     if(!res.ok) {
         throw new Error(`Failed to fetch readme data: ${res.statusText}`);
     }
-    return res.json();
+    return res.text();
 }
+
 
 export async function fetchGitHubProject(
     repoUrl: string
@@ -72,6 +77,8 @@ export async function fetchGitHubProject(
     return {
         owner,
         repo,
+        slug: `${owner}/${repo}`,
+        owner_avatar_url: repoData.owner.avatar_url,    
         repoUrl,
         description: repoData.description || "",
         primaryLanguage: repoData.language || "",
@@ -80,8 +87,7 @@ export async function fetchGitHubProject(
         status: "pending_review",
         openIssues: repoData.open_issues_count,
         lastCommitAt: repoData.pushed_at,
-        readmeHtml: readmeHtml.content,
-        license: repoData.license?.spdx_id || "",
-        githubUrl: repoData.html_url,
+        readmeHtml: readmeHtml,
+        website: repoData.homepage || null,
     }
 }
