@@ -55,51 +55,54 @@ export async function POST(req: NextRequest) {
     const slug = slugify(project.owner, project.repo);
 
     // insert project with extended columns
-    await client.query(
-      `
-      INSERT INTO projects (
-        repo_url,
-        owner,
-        repo_name,
-        slug,
-        description,
-        primary_language,
-        stars,
-        forks,
-        open_issues,
-        last_commit_at,
-        languages,
-        readme_html,
-        tags,
-        contributors,
-        owner_avatar_url,
-        website,
-        last_synced_at
-      )
-      VALUES (
-        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, NOW()
-      )
-      `,
-      [
-        project.repoUrl,        // $1
-        project.owner,          // $2
-        project.repo,           // $3
-        slug,                   // $4
-        project.description,    // $5
-        project.primaryLanguage,// $6
-        project.stars,          // $7
-        project.forks,          // $8
-        project.openIssues,     // $9
-        project.lastCommitAt,   // $10
-        project.readmeHtml,     // $11
-        project.owner_avatar_url, // $12
-        project.website,        // $13
-        project.contributors,   // $14
-        project.languages,      // $15
-        project.tags,           // $16
-        // $17 is NOW() for last_synced_at
-      ]
-    );
+await client.query(
+  `
+  INSERT INTO projects (
+    repo_url,
+    owner,
+    repo_name,
+    slug,
+    description,
+    primary_language,
+    stars,
+    forks,
+    open_issues,
+    last_commit_at,
+    languages,
+    readme_html,
+    tags,
+    contributors,
+    owner_avatar_url,
+    website,
+    last_synced_at
+  )
+  VALUES (
+    $1, $2, $3, $4,
+    $5, $6, $7, $8,
+    $9, $10, $11,
+    $12, $13, $14,
+    $15, $16, NOW()
+  )
+  `,
+  [
+    project.repoUrl,
+    project.owner,
+    project.repo,
+    slug,
+    project.description,
+    project.primaryLanguage,
+    project.stars,
+    project.forks,
+    project.openIssues,
+    project.lastCommitAt,
+    project.languages ?? {},
+    project.readmeHtml,
+    project.tags ?? [],
+    project.contributors ?? [],
+    project.owner_avatar_url,
+    project.website,
+  ]
+);
 
     // mark submission as approved
     await client.query(
