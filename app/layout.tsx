@@ -14,7 +14,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("http://localhost:3000"), // production URL
+  metadataBase: new URL("http://oss-browser.vercel.app"),
   title: "OSSBrowser - Directory of Open Source Projects",
   description: "Directory of open source projects.",
   icons: {
