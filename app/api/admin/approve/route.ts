@@ -97,7 +97,7 @@ await client.query(
     project.lastCommitAt,
     JSON.stringify(project.languages ?? {}),
     project.readmeHtml,
-    JSON.stringify(project.tags ?? []),
+    project.tags ?? [],
     JSON.stringify(project.contributors ?? []),
     project.owner_avatar_url,
     project.website,
