@@ -1,18 +1,24 @@
 "use client";
 
-import { FiStar } from "react-icons/fi";
+import { GoStar } from "react-icons/go";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import Link from "next/link";
 
 interface ProjectCardProps {
   name: string;
   description: string;
   stars: number;
-  tech: string[];
+  languages: string[];
   owner_avatar_url?: string;
+  slug: string;
 }
 
-export default function ProjectCard({ name, description, stars, tech, owner_avatar_url }: ProjectCardProps) {
+export default function ProjectCard({ name, description, stars, languages, owner_avatar_url, slug }: ProjectCardProps) {
   return (
+    <Link 
+      href={`/projects/${slug}`}
+      target="_blank"
+      >
     <div className="group relative bg-white border border-border-subtle p-5 transition-all duration-300 flex flex-col gap-4 rounded-xl cursor-pointer">
       <div className="flex justify-between items-start">
         <div className="flex items-center gap-3">
@@ -27,7 +33,7 @@ export default function ProjectCard({ name, description, stars, tech, owner_avat
           </div>
         </div>
         <div className="flex items-center gap-1 border border-border-subtle px-2 py-1 rounded-lg bg-gray-50/50">
-          <FiStar className="text-amber-400 size-3" />
+          <GoStar className="text-amber-400 size-3" />
           <span className="font-mono text-[10px] font-bold text-foreground">{(stars / 1000).toFixed(1)}k</span>
         </div>
       </div>
@@ -37,13 +43,14 @@ export default function ProjectCard({ name, description, stars, tech, owner_avat
       </p>
 
       <div className="flex flex-wrap gap-1.5 mt-auto">
-        {tech.map((t) => (
+        {languages.map((t) => (
           <span key={t} className="font-mono text-[9px] px-2 py-0.5 border border-border-subtle text-[#64748b] rounded-md bg-white group-hover:border-blue-200 group-hover:text-blue-600 transition-all">
             {t}
           </span>
         ))}
       </div>
     </div>
+    </Link>
   );
 }
 

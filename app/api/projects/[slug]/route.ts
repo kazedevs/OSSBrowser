@@ -1,26 +1,17 @@
 
-import {NextRequest, NextResponse} from "next/server";
-import { getPool } from "@/lib/db";
+import { NextRequest, NextResponse } from "next/server";
+import { getProjectBySlug } from "@/lib/projects";
 
-export async function GET(req: NextRequest, {params}: {params: {slug: string}}){
-    const {slug} = params;
-    const pool = getPool();
+export async function GET(req: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const project = await getProjectBySlug(slug);
 
-    const result = await pool.query(
-        `SELECT *
-        FROM PROJECTS
-        WHERE SLUG = $1
-        AND status = 'published'
-        LIMIT 1`,
-        [slug]
+  if (!project) {
+    return NextResponse.json(
+      { error: "Project not found" },
+      { status: 404 }
     );
+  }
 
-    if(result.rows.length === 0){
-        return NextResponse.json(
-            {error: "Project not found"},
-            {status: 404}
-        )
-    }
-
-    return NextResponse.json(result.rows[0], {status: 200})
+  return NextResponse.json(project, { status: 200 });
 }

@@ -10,6 +10,9 @@ type GitHubProject = {
     repoUrl: string,
     description: string,
     primaryLanguage: string,
+    languages: Record<string, number>,
+    tags: string[],
+    contributors: Array<{login: string, avatar_url: string, html_url: string}>,
     stars: number,
     forks: number,
     status: string,
@@ -50,6 +53,27 @@ async function fetchRepo(owner: string, repo: string){
     return res.json();
 }
 
+async function fetchLanguages(owner: string, repo: string) {
+    const res = await fetch(`${GITHUB_API_URL}/repos/${owner}/${repo}/languages`, {
+        headers: getHeaders(),
+    });
+    if(!res.ok) return {};
+    return res.json();
+}
+
+async function fetchContributors(owner: string, repo: string) {
+    const res = await fetch(`${GITHUB_API_URL}/repos/${owner}/${repo}/contributors?per_page=10`, {
+        headers: getHeaders(),
+    });
+    if(!res.ok) return [];
+    const data = await res.json();
+    return data.map((c: any) => ({
+        login: c.login,
+        avatar_url: c.avatar_url,
+        html_url: c.html_url
+    }));
+}
+
 async function fetchReadme(owner: string, repo: string) {
     const res = await fetch(`${GITHUB_API_URL}/repos/${owner}/${repo}/readme`, {
         headers: {
@@ -69,8 +93,10 @@ export async function fetchGitHubProject(
 ): Promise<GitHubProject> {
     const {owner, repo} = parseRepoUrl(repoUrl);
 
-    const [repoData, readmeHtml] = await Promise.all([
+    const [repoData, languages, contributors, readmeHtml] = await Promise.all([
         fetchRepo(owner, repo),
+        fetchLanguages(owner, repo),
+        fetchContributors(owner, repo),
         fetchReadme(owner, repo),
     ]);
 
@@ -82,6 +108,9 @@ export async function fetchGitHubProject(
         repoUrl,
         description: repoData.description || "",
         primaryLanguage: repoData.language || "",
+        languages: languages,
+        tags: repoData.topics || [],
+        contributors: contributors,
         stars: repoData.stargazers_count,
         forks: repoData.forks_count,
         status: "pending_review",

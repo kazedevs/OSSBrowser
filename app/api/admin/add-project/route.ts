@@ -25,9 +25,10 @@ export async function POST(req: NextRequest) {
             `INSERT INTO projects (
                 slug, repo_url, repo_name, owner, description, 
                 stars, forks, open_issues, owner_avatar_url, primary_language, 
+                languages, tags, contributors,
                 last_commit_at, readme_html, website, last_synced_at
             )
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, NOW())
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, NOW())
             ON CONFLICT (slug) DO NOTHING
             RETURNING id`,
             [
@@ -41,6 +42,9 @@ export async function POST(req: NextRequest) {
                 project.openIssues,         
                 project.owner_avatar_url,   
                 project.primaryLanguage,
+                JSON.stringify(project.languages),
+                project.tags,
+                JSON.stringify(project.contributors),
                 project.lastCommitAt,
                 project.readmeHtml,
                 project.website,
