@@ -68,13 +68,16 @@ export async function POST(req: NextRequest) {
         forks,
         open_issues,
         last_commit_at,
+        languages,
         readme_html,
+        tags,
+        contributors,
         owner_avatar_url,
         website,
         last_synced_at
       )
       VALUES (
-        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, NOW()
+        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, NOW()
       )
       `,
       [
@@ -91,7 +94,10 @@ export async function POST(req: NextRequest) {
         project.readmeHtml,     // $11
         project.owner_avatar_url, // $12
         project.website,        // $13
-        // $14 is NOW() for last_synced_at
+        project.contributors,   // $14
+        project.languages,      // $15
+        project.tags,           // $16
+        // $17 is NOW() for last_synced_at
       ]
     );
 
