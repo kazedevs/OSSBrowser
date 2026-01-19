@@ -95,10 +95,10 @@ await client.query(
     project.forks,
     project.openIssues,
     project.lastCommitAt,
-    project.languages ?? {},
+    JSON.stringify(project.languages ?? {}),
     project.readmeHtml,
-    project.tags ?? [],
-    project.contributors ?? [],
+    JSON.stringify(project.tags ?? []),
+    JSON.stringify(project.contributors ?? []),
     project.owner_avatar_url,
     project.website,
   ]
