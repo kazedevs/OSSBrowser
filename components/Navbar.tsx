@@ -22,13 +22,16 @@ export default function Navbar() {
             <Link href="/about" className="text-xs font-normal hover:text-blue-600 transition-colors uppercase tracking-wider cursor-pointer">
               About
             </Link>
+            <Link href="/blog" className="text-xs font-normal hover:text-blue-600 transition-colors uppercase tracking-wider cursor-pointer">
+              Blog
+            </Link>
           </div>
         </div>
 
         <div className="flex items-center gap-4">
           <div className="hidden md:block">
             <Link href="/submit">
-            <button className="text-foreground border border-border-subtle text-[10px] font-sans font-normal px-4 py-1.5 rounded-full hover:text-blue-600 hover:border-blue-200 transition-all uppercase tracking-tight shadow-none cursor-pointer">
+            <button className="text-foreground border border-border-subtle text-[10px] font-sans font-normal px-4 py-1.5 rounded-full transition-all uppercase tracking-tight shadow-none cursor-pointer">
               Submit Project
             </button>
             </Link>
@@ -54,16 +57,14 @@ export default function Navbar() {
             >
               About
             </Link>
-            <Link 
-              href="/about" 
-              className="text-sm font-medium text-[#878787] hover:text-blue-600 transition-colors uppercase tracking-wider"
-              onClick={() => setIsOpen(false)}
-            >
-              About
+            <Link href="/blog" className="text-sm font-medium text-[#878787] hover:text-blue-600 transition-colors uppercase tracking-wider cursor-pointer">
+              Blog
             </Link>
-            <button className="w-full text-foreground border border-border-subtle text-[10px] font-sans font-light px-4 py-2.5 rounded-full hover:text-blue-600 hover:border-blue-200 transition-all uppercase tracking-tight shadow-none cursor-pointer">
+            <Link href="/submit">
+            <button className="w-full text-foreground border border-border-subtle text-[10px] font-sans font-normal px-4 py-2.5 rounded-full transition-all uppercase tracking-tight shadow-none cursor-pointer">
               Submit Project
             </button>
+            </Link>
           </div>
         </div>
       )}
