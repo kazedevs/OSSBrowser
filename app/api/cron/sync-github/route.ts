@@ -11,10 +11,12 @@ export async function GET(req: NextRequest) {
 
   const pool = getPool();
   const client = await pool.connect();
+  const BATCH_SIZE = Number(process.env.CRON_BATCH_SIZE ?? 10);
 
   try {
     const res = await client.query(
-      `SELECT id, repo_url FROM projects WHERE last_synced_at IS NULL OR last_synced_at < NOW() - INTERVAL '1 day' ORDER BY last_synced_at ASC NULLS FIRST LIMIT 10`
+      `SELECT id, repo_url FROM projects WHERE last_synced_at IS NULL OR last_synced_at < NOW() - INTERVAL '1 day' ORDER BY last_synced_at NULLS FIRST LIMIT $1`,
+      [BATCH_SIZE]
     );
 
     for(const row of res.rows){

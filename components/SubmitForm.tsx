@@ -114,9 +114,9 @@ export default function SubmitForm() {
                     <button 
                         type="submit" 
                         disabled={loading}
-                        className="w-full py-4 bg-blue-600 text-white font-bold text-xs uppercase tracking-widest rounded-xl hover:bg-blue-700 transition-all disabled:bg-gray-300 disabled:cursor-not-allowed cursor-pointer"
+                        className="w-full py-4 bg-blue-600 text-white font-bold text-sm rounded-xl hover:bg-blue-700 transition-all disabled:bg-gray-300 disabled:cursor-not-allowed cursor-pointer"
                     >
-                        {loading ? "SUBMITTING..." : "SUBMIT PROJECT"}
+                        {loading ? "Submitting..." : "Submit to waitlist (10+ days)"}
                     </button>
                 </form>
             )}
