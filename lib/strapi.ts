@@ -12,7 +12,26 @@ export async function fetchBlogs() {
     throw new Error("Failed to fetch blogs");
   }
 
-  return res.json();
+  const data = await res.json();
+  
+  return {
+    data: data.data.map((post: any) => ({
+      id: post.id,
+      slug: post.attributes.slug,
+      title: post.attributes.title,
+      excerpt: post.attributes.excerpt,
+      content: post.attributes.content,
+      date: new Date(post.attributes.publishedAt).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      }),
+      cover_image: post.attributes.cover_image?.data?.attributes?.url 
+        ? `${STRAPI_URL}${post.attributes.cover_image.data.attributes.url}`
+        : null,
+      publishedAt: post.attributes.publishedAt,
+    }))
+  };
 }
 
 export async function fetchBlogBySlug(slug: string) {
@@ -27,5 +46,30 @@ export async function fetchBlogBySlug(slug: string) {
     throw new Error("Failed to fetch blog");
   }
 
-  return res.json();
+  const data = await res.json();
+  
+  // Check if blog post exists
+  if (!data.data || data.data.length === 0) {
+    return null;
+  }
+
+  const post = data.data[0];
+  
+  return {
+    id: post.id,
+    slug: post.attributes.slug,
+    title: post.attributes.title,
+    excerpt: post.attributes.excerpt,
+    content: post.attributes.content,
+    date: new Date(post.attributes.publishedAt).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    }),
+    cover_image: post.attributes.cover_image?.data?.attributes?.url 
+      ? `${STRAPI_URL}${post.attributes.cover_image.data.attributes.url}`
+      : null,
+    publishedAt: post.attributes.publishedAt,
+    createdAt: post.attributes.createdAt,
+  };
 }

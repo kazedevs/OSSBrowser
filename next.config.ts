@@ -7,7 +7,13 @@ const nextConfig: NextConfig = {
         protocol: 'http',
         hostname: 'localhost',
         port: '1337',
+        pathname: '/uploads/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'ossbrowser-cms.onrender.com',
+        pathname: '/uploads/**',
+      }
     ],
   },
 };
